@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LOSE_IOS2025</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(-45deg, #ff9999, #66ccff, #99ff99, #ffcc66);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .hidden { display: none; }
+        button {
+            background: #fff;
+            border: none;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input, select {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+        }
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center;">LOSE_IOS2025</h1>
+        <div id="user-box" class="box">
+            <div id="user-info"></div>
+            <div id="register-box">
+                <h2>Đăng ký tài khoản</h2>
+                <input type="text" id="register-id" placeholder="Nhập ID của bạn"/>
+                <button onclick="register()">Đăng ký</button>
+            </div>
+        </div>
+
+        <div class="box">
+            <h2>Lịch sử mua hàng</h2>
+            <div id="history-list">Chưa có giao dịch.</div>
+            <button onclick="downloadHistory()">Tải xuống</button>
+        </div>
+
+        <button onclick="document.getElementById('admin-login').classList.toggle('hidden')">Admin Ẩn</button>
+        <div id="admin-login" class="box hidden">
+            <h2>Đăng nhập Admin</h2>
+            <input type="text" id="admin-user" placeholder="Tài khoản admin">
+            <input type="password" id="admin-pass" placeholder="Mật khẩu admin">
+            <button onclick="adminLogin()">Đăng nhập</button>
+        </div>
+
+        <div id="admin-panel" class="box hidden">
+            <h2>Quản lý thành viên</h2>
+            <div id="user-list"></div>
+            <input type="text" id="target-id" placeholder="Nhập ID cần cộng tiền">
+            <input type="number" id="amount" placeholder="Số tiền cộng">
+            <button onclick="addMoney()">Cộng tiền</button>
+        </div>
+    </div>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        const history = JSON.parse(localStorage.getItem('history') || '[]');
+        let currentID = localStorage.getItem('currentID') || null;
+
+        function register() {
+            const id = document.getElementById('register-id').value;
+            if (!id) return alert('Vui lòng nhập ID');
+            if (!users[id]) users[id] = { balance: 0 };
+            currentID = id;
+            localStorage.setItem('currentID', id);
+            localStorage.setItem('users', JSON.stringify(users));
+            renderUser();
+        }
+
+        function renderUser() {
+            const box = document.getElementById('user-info');
+            const registerBox = document.getElementById('register-box');
+            if (!currentID || !users[currentID]) {
+                box.innerHTML = "";
+                registerBox.style.display = 'block';
+                return;
+            }
+            box.innerHTML = \`<h2>Xin chào ID: \${currentID}</h2><p>Số dư: \${users[currentID].balance} VNĐ</p>\`;
+            registerBox.style.display = 'none';
+        }
+
+        function adminLogin() {
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            if (user === "LOSE" && pass === "2008") {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadUsers();
+            } else {
+                alert('Sai tài khoản hoặc mật khẩu');
+            }
+        }
+
+        function loadUsers() {
+            const list = document.getElementById('user-list');
+            list.innerHTML = Object.keys(users).map(id => \`<p>ID: \${id} - Số dư: \${users[id].balance}</p>\`).join('');
+        }
+
+        function addMoney() {
+            const id = document.getElementById('target-id').value;
+            const amount = parseInt(document.getElementById('amount').value);
+            if (!users[id]) return alert('ID không tồn tại');
+            users[id].balance += amount;
+            localStorage.setItem('users', JSON.stringify(users));
+            loadUsers();
+            if (id === currentID) renderUser();
+        }
+
+        function downloadHistory() {
+            const blob = new Blob([history.join("\n")], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "lich_su_mua_hang.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        renderUser();
+    </script>
+</body>
+</html>
