@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hack Liên Quân Tự Động</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {box-sizing: border-box;margin: 0;padding: 0;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      animation: movebg 20s linear infinite;
+    }
+    @keyframes movebg {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    header, footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 2em;
+      color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 20px;
+    }
+    section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      margin: 20px 0;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+    h2 {
+      color: #0ff;
+      margin-bottom: 15px;
+    }
+    .key-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+    button {
+      background: #00f0ff;
+      color: #111;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00f0ff;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background: #fff;
+      color: #00f0ff;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+    #qr-box {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+    }
+    #qr-img {
+      max-width: 200px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.6);
+    }
+    input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Hack Liên Quân Tự Động</h1>
+  <p>Hỗ trợ: <a href="https://t.me/LOSE_IOS2025" style="color:#0ff;">@LOSE_IOS2025</a></p>
+</header>
+
+<div class="container">
+  <section>
+    <h2>Thông Tin Thành Viên</h2>
+    <p>ID của bạn: <strong id="user-id"></strong></p>
+    <p>Số dư: <strong id="user-balance">0</strong> VNĐ</p>
+  </section>
+
+  <section>
+    <h2>Hack Liên Quân 1.58</h2>
+    <div id="keys"></div>
+  </section>
+
+  <section>
+    <h2>Nạp Tiền</h2>
+    <button onclick="napTien()">Nạp tiền</button>
+    <div id="qr-box">
+      <p>Số tiền: <span id="amount-display">0</span> VNĐ</p>
+      <p>Nội dung chuyển khoản: <code id="nap-code">NAP000000</code></p>
+      <img id="qr-img" src="" alt="QR Vietcombank">
+    </div>
+  </section>
+
+  <section>
+    <h2>Lịch Sử Giao Dịch</h2>
+    <ul id="history"></ul>
+  </section>
+
+  <section>
+    <h2>Admin - Cộng Tiền Cho ID</h2>
+    <div id="admin-login">
+      <input id="admin-user" placeholder="Tài khoản admin">
+      <input id="admin-pass" type="password" placeholder="Mật khẩu admin">
+      <button onclick="loginAdmin()">Đăng nhập</button>
+    </div>
+    <div id="admin-panel" style="display:none;">
+      <input id="target-id" placeholder="ID thành viên (hoặc * để cộng toàn bộ)">
+      <input id="add-amount" type="number" placeholder="Số tiền cần cộng">
+      <button onclick="addMoney()">Cộng tiền</button>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p>Liên hệ: <a href="https://t.me/LOSE_IOS2025" style="color:#0ff;">@LOSE_IOS2025</a></p>
+</footer>
+
+<script>
+  let user = {
+    id: Math.floor(100000 + Math.random() * 900000),
+    balance: 0,
+    history: []
+  };
+
+  const allUsers = {};
+  allUsers[user.id] = user;
+
+  document.getElementById("user-id").textContent = user.id;
+
+  const keys = [
+    { id: 1, name: "Hack V1 Antiban Full Mùa", price: 50000, link: "https://www.mediafire.com/file/hoz8lut0jhc35go/LQ_hack_1.58.11379483_1745588089.ipa/file" },
+    { id: 2, name: "Hack Menu Antiban Full Mùa", price: 100000, link: "https://www.mediafire.com/file/hoz8lut0jhc35go/LQ_hack_1.58.11379483_1745588089.ipa/file" }
+  ];
+
+  function updateUI() {
+    document.getElementById("user-balance").textContent = user.balance.toLocaleString();
+    const keyDiv = document.getElementById("keys");
+    keyDiv.innerHTML = "";
+    keys.forEach(k => {
+      keyDiv.innerHTML += `
+        <div class="key-item">
+          <span>${k.name} - ${k.price.toLocaleString()} VNĐ</span>
+          <button onclick="buyKey(${k.id})">Mua</button>
+        </div>`;
+    });
+    const history = document.getElementById("history");
+    history.innerHTML = "";
+    user.history.forEach(h => {
+      const li = document.createElement("li");
+      li.innerHTML = `${h.name} - <a href="${h.link}" target="_blank">Tải xuống</a>`;
+      history.appendChild(li);
+    });
+  }
+
+  function buyKey(id) {
+    const key = keys.find(k => k.id === id);
+    if (!key) return alert("Không tìm thấy sản phẩm.");
+    if (user.balance < key.price) return alert("Bạn không đủ số dư.");
+    user.balance -= key.price;
+    user.history.push({ name: key.name, link: key.link });
+    alert("Mua thành công! Link tải: " + key.link);
+    updateUI();
+  }
+
+  function napTien() {
+    const amountStr = prompt("Nhập số tiền muốn nạp:");
+    const amount = parseInt(amountStr);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Số tiền không hợp lệ.");
+      return;
+    }
+    document.getElementById("qr-box").style.display = "block";
+    document.getElementById("amount-display").textContent = amount.toLocaleString();
+    document.getElementById("nap-code").textContent = "NAP" + user.id;
+    document.getElementById("qr-img").src =
+      `https://img.vietqr.io/image/VCB-1048868033-compact2.png?amount=${amount}&addInfo=NAP${user.id}&accountName=DAO%20DUC%20HAI`;
+  }
+
+  function loginAdmin() {
+    const u = document.getElementById("admin-user").value.trim();
+    const p = document.getElementById("admin-pass").value.trim();
+    if (u === "LOSE" && p === "2008") {
+      alert("Đăng nhập thành công.");
+      document.getElementById("admin-login").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+    } else {
+      alert("Sai tài khoản hoặc mật khẩu.");
+    }
+  }
+
+  function addMoney() {
+    const id = document.getElementById("target-id").value.trim();
+    const amount = parseInt(document.getElementById("add-amount").value);
+    if (!id || isNaN(amount) || amount <= 0) {
+      return alert("ID hoặc số tiền không hợp lệ.");
+    }
+    if (id === "*") {
+      for (let uid in allUsers) {
+        allUsers[uid].balance += amount;
+      }
+      alert(`Đã cộng ${amount.toLocaleString()} VNĐ cho tất cả thành viên`);
+    } else if (allUsers[id]) {
+      allUsers[id].balance += amount;
+      alert(`Đã cộng ${amount.toLocaleString()} VNĐ cho ID ${id}`);
+    } else {
+      alert("Không tìm thấy ID này trong hệ thống.");
+    }
+    updateUI();
+  }
+
+  updateUI();
+</script>
+
+</body>
+</html>
