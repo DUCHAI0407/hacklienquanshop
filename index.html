@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DucHai.com – Hack & Mod Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{font-family:Inter,sans-serif;margin:0;padding:0;background:#f3f4f6;color:#1e293b;transition:0.3s;}
+#sidebar{position:fixed;top:0;left:0;height:100%;width:250px;background:#fff;border-right:1px solid #e5e7eb;transform:translateX(-260px);transition:transform 0.3s;z-index:50;overflow-y:auto;}
+#sidebar.show{transform:translateX(0);}
+#sidebar h2{font-weight:bold;margin:1rem;color:#7c3aed;}
+.menu-item{padding:.75rem 1rem;cursor:pointer;border-radius:.5rem;margin:.25rem 0;transition:0.2s;color:#1e293b;}
+.menu-item:hover{background:linear-gradient(to right,#ede9fe,#f3e8ff);color:#7c3aed;}
+#hamburger{position:fixed;top:1rem;left:1rem;z-index:60;padding:.5rem;background:white;border-radius:.5rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.toast{position:fixed;bottom:1rem;right:1rem;background:#7c3aed;color:white;padding:.5rem 1rem;border-radius:.5rem;opacity:0.9;transition:0.3s;}
+.card{background:white;border-radius:1rem;border:1px solid #e5e7eb;padding:1rem;margin-bottom:1rem;transition:0.3s;}
+.btn{padding:.5rem 1rem;border-radius:.75rem;font-weight:600;cursor:pointer;transition:0.2s;}
+.btn-primary{background:linear-gradient(to right,#7c3aed,#a78bfa);color:white;}
+.btn-outline{border:1px solid #7c3aed;color:#7c3aed;}
+input, select{border:1px solid #d1d5db;padding:.5rem .75rem;border-radius:.5rem;width:100%;margin-bottom:.5rem;}
+.product-card{border:1px solid #e5e7eb;border-radius:.75rem;padding:.75rem;margin-bottom:.5rem;background:white;transition:0.2s;}
+.product-card:hover{transform:scale(1.02);}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div id="sidebar">
+<h2>DucHai.com</h2>
+<div id="menuItems">
+  <div class="menu-item" onclick="showPage('intro')"> Trang chủ</div>
+  <div class="menu-item" onclick="showPage('products')"> Sản phẩm</div>
+  <div class="menu-item" onclick="showPage('deposit')"> Nạp tiền</div>
+  <div id="adminLink" class="menu-item" style="display:none;" onclick="showPage('admin')"> Admin</div>
+  <div class="menu-item text-red-600" onclick="logout()"> Đăng xuất</div>
+</div>
+</div>
+
+<!-- Hamburger -->
+<div id="hamburger">&#9776;</div>
+
+<!-- Main Content -->
+<div id="mainContent" style="margin-left:0;transition:margin-left 0.3s;padding:2rem;">
+
+<!-- Login / Register -->
+<div id="authSection" class="max-w-md mx-auto mt-20">
+<h2 class="text-2xl font-bold mb-4">Đăng nhập / Đăng ký</h2>
+<input id="loginName" placeholder="Tên đăng nhập">
+<input id="loginPass" type="password" placeholder="Mật khẩu">
+<button class="btn btn-primary w-full mb-2" onclick="login()">Đăng nhập</button>
+<button class="btn btn-outline w-full" onclick="register()">Đăng ký</button>
+</div>
+
+<div id="app" style="display:none;">
+
+<!-- Intro -->
+<section id="intro" class="card">
+<h2 class="text-xl font-bold mb-2">Hack & Mod Cho Liên Quân & Roblox</h2>
+<p>Chào mừng bạn đến với kho tiện ích đỉnh cao dành cho Liên Quân và Roblox! Khám phá các công cụ và bản mod giúp trải nghiệm game thú vị hơn, an toàn và dễ sử dụng.</p>
+<p class="mt-2 text-purple-700 font-semibold" id="welcomeMsg">✨ Chào mừng bạn đến với website!</p>
+<p class="mt-2">Liên hệ Zalo: <b>0899119398</b></p>
+</section>
+
+<!-- Products -->
+<section id="products" class="card" style="display:none;">
+<h3 class="text-lg font-bold mb-2">Sản phẩm</h3>
+<div id="productGrid"></div>
+</section>
+
+<!-- Deposit -->
+<section id="deposit" class="card" style="display:none;">
+<h3 class="text-lg font-bold mb-2">Nạp tiền</h3>
+<input id="depositAmount" type="number" placeholder="Số tiền nạp (VNĐ)">
+<button class="btn btn-primary" onclick="showBankInfo()">Hiện thông tin ngân hàng</button>
+<div id="bankInfo" class="mt-4 p-3 border rounded" style="display:none;background:linear-gradient(to right,#ede9fe,#f3e8ff);">
+<p><b>Ngân hàng:</b> MB Bank</p>
+<p><b>Số TK:</b> 381112</p>
+<p><b>Chủ TK:</b> Dao Duc Hai</p>
+<p><b>Nội dung:</b> naptien_<span id="depositUser"></span></p>
+<p class="mt-2 text-purple-700 font-semibold" id="bonusInfo"></p>
+</div>
+</section>
+
+<!-- Admin -->
+<section id="admin" class="card" style="display:none;">
+<h3 class="text-lg font-bold mb-2">Admin Panel</h3>
+
+<h4 class="font-semibold mt-2">Cộng tiền thủ công</h4>
+<input id="adminUser" placeholder="Tên user">
+<input id="adminAmount" type="number" placeholder="Số tiền cộng">
+<button class="btn btn-primary" onclick="adminAddMoney()">Cộng tiền</button>
+
+<h4 class="font-semibold mt-4">Quản lý sản phẩm</h4>
+<input id="adminProductName" placeholder="Tên sản phẩm">
+<input id="adminProductID" placeholder="ID sản phẩm">
+<input id="adminProductFile" placeholder="Link file sản phẩm">
+<button class="btn btn-primary" onclick="adminAddProduct()">Thêm sản phẩm</button>
+<div id="adminProducts" class="mt-2"></div>
+
+<h4 class="font-semibold mt-4">Quản lý tài khoản</h4>
+<div id="adminUsers" class="mt-2"></div>
+</section>
+
+</div>
+</div>
+
+<div id="toast" class="toast" style="display:none;"></div>
+
+<script>
+// Sidebar toggle
+const sidebar=document.getElementById('sidebar');
+document.getElementById('hamburger').onclick=()=> sidebar.classList.toggle('show');
+
+// Data
+let users={'duchai08':'haiidz1'};
+let blockedUsers={};
+let currentUser=null;
+let products=[];
+let userBalances={};
+
+// Helpers
+function showPage(id){
+  ['intro','products','deposit','admin'].forEach(p=>document.getElementById(p).style.display='none');
+  if(id)document.getElementById(id).style.display='block';
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',2000);
+}
+
+// Login / Register
+function login(){
+  const u=document.getElementById('loginName').value;
+  const p=document.getElementById('loginPass').value;
+  if(blockedUsers[u]){showToast('Tài khoản đã bị khoá');return;}
+  if(users[u]&&users[u]===p){
+    currentUser=u;
+    userBalances[u]=userBalances[u]||0;
+    document.getElementById('authSection').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('welcomeMsg').textContent=`✨ Chào mừng ${u} đến với website!`;
+    document.getElementById('depositUser').textContent=u;
+    if(u==='duchai08')document.getElementById('adminLink').style.display='block';
+    showPage('intro');
+    renderProducts();
+    renderAdminProducts();
+    renderAdminUsers();
+    showToast('Đăng nhập thành công!');
+  }else{showToast('Sai tên đăng nhập hoặc mật khẩu');}
+}
+function register(){
+  const u=document.getElementById('loginName').value;
+  const p=document.getElementById('loginPass').value;
+  if(!u||!p){showToast('Nhập đầy đủ tên và mật khẩu');return;}
+  if(users[u]){showToast('User đã tồn tại');return;}
+  users[u]=p;
+  userBalances[u]=0;
+  showToast('Đăng ký thành công!');
+}
+function logout(){
+  currentUser=null;
+  document.getElementById('authSection').style.display='block';
+  document.getElementById('app').style.display='none';
+  document.getElementById('adminLink').style.display='none';
+}
+
+// Products
+function renderProducts(){
+  const grid=document.getElementById('productGrid');
+  grid.innerHTML='';
+  products.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='product-card';
+    div.innerHTML=`<b>${p.id}</b> - ${p.name}<br>
+    <a href="${p.file}" target="_blank" class="btn btn-primary mt-1">Mua / Xem file</a>`;
+    grid.appendChild(div);
+  });
+}
+
+// Admin functions
+function adminAddProduct(){
+  const name=document.getElementById('adminProductName').value;
+  const id=document.getElementById('adminProductID').value;
+  const file=document.getElementById('adminProductFile').value;
+  if(!name||!id||!file){showToast('Nhập đủ thông tin sản phẩm');return;}
+  products.push({id,name,file});
+  renderProducts();
+  renderAdminProducts();
+  showToast('Thêm sản phẩm thành công');
+}
+function renderAdminProducts(){
+  const div=document.getElementById('adminProducts');
+  div.innerHTML='';
+  products.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='flex justify-between items-center mb-1';
+    d.innerHTML=`<b>${p.id}</b> - ${p.name} 
+    <button class="btn btn-outline btn-sm" onclick="deleteProduct(${i})">Xóa</button>`;
+    div.appendChild(d);
+  });
+}
+function deleteProduct(index){
+  products.splice(index,1);
+  renderProducts();
+  renderAdminProducts();
+}
+
+// Admin money
+function adminAddMoney(){
+  const user=document.getElementById('adminUser').value;
+  const amt=parseInt(document.getElementById('adminAmount').value);
+  if(!user || !amt){showToast('Nhập đầy đủ thông tin');return;}
+  userBalances[user]=(userBalances[user]||0)+amt;
+  showToast(`Cộng ${amt} VNĐ cho ${user} thành công`);
+  renderAdminUsers();
+}
+function renderAdminUsers(){
+  const div=document.getElementById('adminUsers');
+  div.innerHTML='';
+  Object.keys(users).forEach(u=>{
+    const d=document.createElement('div');
+    d.className='flex justify-between items-center mb-1';
+    d.innerHTML=`<b>${u}</b> - Số dư: ${(userBalances[u]||0).toLocaleString()} VNĐ
+    <button class="btn btn-outline btn-sm" onclick="blockUser('${u}')">Khoá TK</button>`;
+    div.appendChild(d);
+  });
+}
+function blockUser(u){
+  blockedUsers[u]=true;
+  showToast(`Đã khoá tài khoản ${u}`);
+}
+
+// Deposit bank info
+function showBankInfo(){
+  const amt=parseInt(document.getElementById('depositAmount').value);
+  if(!amt || amt<=0){showToast('Nhập số tiền hợp lệ');return;}
+  let bonus=0;
+  if(amt>=50000) bonus=Math.floor(amt*0.05);
+  document.getElementById('bonusInfo').textContent=`Bạn nhận thêm ${bonus.toLocaleString()} VNĐ khi nạp ${amt.toLocaleString()} VNĐ`;
+  document.getElementById('bankInfo').style.display='block';
+}
+</script>
+</body>
+</html>
