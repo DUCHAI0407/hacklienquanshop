@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DucHai.com — Dark Luxury (Single File)</title>
+<style>
+:root{
+  --bg:#070708; --panel:#0f1112; --muted:#9a988f; --gold:#FFD700; --glass: rgba(255,255,255,0.02);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#050506,#0b0b0c);color:#eee}
+.header{position:fixed;left:0;right:0;top:0;height:64px;background:linear-gradient(90deg,#000,#141414);display:flex;align-items:center;padding:10px 16px;z-index:200;border-bottom:1px solid rgba(255,215,0,0.04)}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44;border-radius:8px;background:linear-gradient(135deg,#222,#111);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:800}
+.title{font-weight:700;color:var(--gold);font-size:1rem}
+.subtitle{font-size:0.78rem;color:var(--muted);margin-top:2px}
+.controls{margin-left:auto;display:flex;gap:10px;align-items:center}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--gold);padding:8px 10px;border-radius:8px;cursor:pointer}
+.hamburger{background:transparent;border:0;color:var(--gold);font-size:20px;padding:8px;cursor:pointer}
+.sidebar{position:fixed;left:-320px;top:0;width:320px;height:100vh;background:linear-gradient(180deg,#0b0b0c,#0f0f10);padding:18px;box-shadow:16px 0 60px rgba(0,0,0,0.6);transition:left .22s ease;z-index:210}
+.sidebar.open{left:0}
+.sidebar .close{color:var(--muted);text-align:right;cursor:pointer;margin-bottom:10px}
+.sidebar a{display:block;padding:10px 12px;color:var(--gold);text-decoration:none;border-radius:8px;margin:6px 0}
+.sidebar a:hover{background:rgba(255,215,0,0.03);color:#fff}
+.container{max-width:1100px;margin:92px auto;padding:18px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));border-radius:12px;padding:16px;margin-bottom:14px;border:1px solid rgba(255,215,0,0.04)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.small{font-size:0.9rem;color:var(--muted)}
+.input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+.primary{background:linear-gradient(90deg,var(--gold),#ffd24d);border:0;padding:10px 12px;border-radius:8px;color:#000;font-weight:700;cursor:pointer}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+.item{background:rgba(255,255,255,0.01);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+.title{font-weight:700;color:var(--gold)}
+.muted{color:var(--muted)}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .22s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.footer{margin-top:18px;color:var(--muted);font-size:0.9rem;text-align:center}
+@media(max-width:760px){.container{margin:120px 12px}}
+.light-mode{background:#f7f7f7;color:#111}
+.light-mode .logo{background:linear-gradient(135deg,#fff,#eee);color:#111}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <div class="logo">DH</div>
+    <div>
+      <div class="title">DucHai.com</div>
+      <div class="subtitle">Dark Luxury • Game Utilities</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div id="sessionDisplay" class="small muted">Chưa đăng nhập</div>
+    <button id="themeBtn" class="btn" title="Chuyển chế độ">🌑</button>
+    <button id="hamburger" class="hamburger" title="Menu">☰</button>
+  </div>
+</header>
+
+<nav id="sidebar" class="sidebar" aria-hidden="true">
+  <div class="close" id="closeSidebar">✖</div>
+  <a href="#" data-page="home">Giới thiệu</a>
+  <a href="#" id="menuStart" data-page="start">Bắt đầu</a>
+  <a href="#" id="menuLogin" data-page="login">Đăng nhập</a>
+  <a href="#" id="menuRegister" data-page="register">Đăng ký</a>
+  <a href="#" data-page="products">Sản phẩm</a>
+  <a href="#" data-page="blinds">Túi mù</a>
+  <a href="#" data-page="deposit">Nạp tiền</a>
+  <a href="#" id="menuAdmin" data-page="admin" style="display:none">Trang quản trị</a>
+  <a href="#" id="menuLogout" style="display:none">Đăng xuất</a>
+  <div class="muted">Phiên: <span id="sidebarUser">Khách</span></div>
+</nav>
+
+<main class="container">
+  <!-- Home -->
+  <section id="home" class="page card active">
+    <h1>Chào mừng đến DucHai.com</h1>
+    <p class="small muted">Zalo Admin : 0899119398 </p>
+    <div style="margin-top:12px">
+      <button class="primary" data-page="start">Bắt đầu →</button>
+    </div>
+  </section>
+
+  <!-- Start -->
+  <section id="start" class="page card">
+    <h2>Bắt đầu</h2>
+    <p class="muted">Đăng nhập hoặc tạo tài khoản để sử dụng</p>
+    <div style="margin-top:12px;display:flex;gap:10px">
+      <button class="primary" data-page="login">Đăng nhập</button>
+      <button class="ghost" data-page="register">Đăng ký</button>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section id="login" class="page card">
+    <h2>Đăng nhập</h2>
+    <div style="max-width:520px">
+      <input id="loginUser" class="input" placeholder="Tên đăng nhập (username)">
+      <input id="loginPass" class="input" type="password" placeholder="Mật khẩu">
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="primary" id="btnLogin">Đăng nhập</button>
+        <button class="ghost" data-page="register">Chưa có tài khoản?</button>
+      </div>
+      <p id="loginMsg" class="muted" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- Register -->
+  <section id="register" class="page card">
+    <h2>Đăng ký</h2>
+    <div style="max-width:520px">
+      <input id="regUser" class="input" placeholder="Tên đăng nhập (username)">
+      <input id="regPass" class="input" type="password" placeholder="Mật khẩu">
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <div id="captchaBox" class="item small" style="background:rgba(255,215,0,0.04);color:var(--gold)"></div>
+        <input id="captchaInput" class="input" placeholder="Nhập captcha" style="flex:1">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="primary" id="btnRegister">Xác nhận</button>
+        <button class="ghost" id="btnReloadCaptcha">Lấy mã mới</button>
+      </div>
+      <p id="regMsg" class="muted" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section id="products" class="page card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h2>Sản phẩm</h2>
+        <p class="small muted">Mua sản phẩm — trừ tiền trong tài khoản và mở link (link không hiển thị trước khi mua).</p>
+      </div>
+      <div class="small muted">Số dư: <strong id="uiBalance">0 VNĐ</strong></div>
+    </div>
+    <div id="productList" class="grid" style="margin-top:12px"></div>
+  </section>
+
+  <!-- Blinds -->
+  <section id="blinds" class="page card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><h2>Túi mù Liên Quân</h2><p class="small muted">Mua túi mù để nhận TK/MK hoặc phần thưởng (thông tin không hiển thị trước khi mua).</p></div>
+      <div class="small muted">Số dư: <strong id="uiBalance2">0 VNĐ</strong></div>
+    </div>
+    <div id="blindList" class="grid" style="margin-top:12px"></div>
+  </section>
+
+  <!-- Deposit -->
+  <section id="deposit" class="page card">
+    <h2>Nạp tiền</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="min-width:260px">
+        <div class="card" style="background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.06)">
+          <p><strong>Ngân hàng</strong>: MBBANK</p>
+          <p><strong>Số TK</strong>: 381112</p>
+          <p><strong>Chủ TK</strong>: DAO DUC HAI</p>
+          <p><strong>Nội dung</strong>: <span id="depositMemo">dh_username</span></p>
+          <img id="depositQR" src="" alt="VietQR" style="width:100%;border-radius:8px;margin-top:8px">
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:260px">
+        <label class="small muted">Nhập số tiền muốn nạp (VNĐ)</label>
+        <input id="depositAmount" class="input" type="number" placeholder="Ví dụ: 10000">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="primary" id="btnPaid">Tôi đã nạp</button>
+          <button class="ghost" id="btnCopyMemo">Sao chép nội dung</button>
+        </div>
+        <p id="depositStatus" class="muted small" style="margin-top:8px"></p>
+
+        <div style="margin-top:12px">
+          <h3 class="small muted">Lịch sử yêu cầu nạp</h3>
+          <div id="topupHistory" class="small muted" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin -->
+  <section id="admin" class="page card">
+    <h2>Trang quản trị</h2>
+
+    <div style="margin-top:12px">
+      <h3>Quản lý sản phẩm</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="admin_p_name" class="input" placeholder="Tên sản phẩm" style="flex:2">
+        <input id="admin_p_price" class="input" placeholder="Giá (VNĐ)" style="flex:1">
+        <input id="admin_p_link" class="input" placeholder="Link (URL)" style="flex:2">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="primary" id="adminAddProd">Thêm / Lưu</button>
+        <button class="ghost" id="adminClearProd">Xóa form</button>
+      </div>
+      <div id="adminProducts" style="margin-top:12px"></div>
+    </div>
+
+    <hr style="opacity:.06;margin:18px 0">
+
+    <div>
+      <h3>Quản lý Túi mù</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="admin_b_name" class="input" placeholder="Tên" style="flex:2">
+        <input id="admin_b_price" class="input" placeholder="Giá (VNĐ)" style="flex:1">
+        <input id="admin_b_acc" class="input" placeholder="Tài khoản" style="flex:1">
+        <input id="admin_b_pass" class="input" placeholder="Mật khẩu" style="flex:1">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="primary" id="adminAddBlind">Thêm / Lưu</button>
+        <button class="ghost" id="adminClearBlind">Xóa form</button>
+      </div>
+      <div id="adminBlinds" style="margin-top:12px"></div>
+    </div>
+
+    <hr style="opacity:.06;margin:18px 0">
+
+    <div>
+      <h3>Yêu cầu nạp tiền (Pending)</h3>
+      <div id="adminTopups" style="margin-top:8px"></div>
+    </div>
+
+    <hr style="opacity:.06;margin:18px 0">
+
+    <div>
+      <h3>Danh sách người dùng</h3>
+      <div id="adminUsers" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <div class="footer">Website By DucHai.com</div>
+</main>
+
+<script>
+/* Single-file app
+ Admin credentials: admin / haiidz1
+ Data keys:
+  - users: { username: { password, balance, purchases:[], regTime, regIp } }
+  - products: [{name,price,link}]
+  - blinds: [{name,price,acc,pass}]
+  - topupRequests: [{id,user,amount,time,status}]
+ Session: sessionStorage.sessionUser
+*/
+
+// constants
+const ADMIN_USER = 'admin', ADMIN_PASS = 'haiidz1';
+
+// helpers
+const $ = id => document.getElementById(id);
+const read = k => { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null } }
+const write = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+const uid = () => 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const money = v => Number(v||0).toLocaleString('vi-VN') + ' VNĐ';
+const escapeHtml = s => (s||'').toString().replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+
+// seed data
+if(!read('users')) write('users', {});
+if(!read('products')) write('products', [
+  {name:'Mod Liên Quân VIP', price:15000, link:'https://example.com/mod-vip'},
+  {name:'Skin may mắn', price:8000, link:'https://example.com/skin-random'}
+]);
+if(!read('blinds')) write('blinds', [
+  {name:'Túi mù cơ bản', price:5000, acc:'acc_demo1', pass:'pass123'},
+  {name:'Túi mù pro', price:20000, acc:'acc_pro', pass:'pro123'}
+]);
+if(!read('topupRequests')) write('topupRequests', []);
+
+// session
+let currentUser = sessionStorage.getItem('sessionUser') || null;
+function setSession(u){
+  currentUser = u;
+  if(u) sessionStorage.setItem('sessionUser', u);
+  else sessionStorage.removeItem('sessionUser');
+  updateAuthUI();
+}
+
+// sidebar controls
+const sidebar = $('sidebar'), hamburger = $('hamburger'), closeSidebar = $('closeSidebar');
+hamburger.addEventListener('click', ()=> sidebar.classList.add('open'));
+closeSidebar.addEventListener('click', ()=> sidebar.classList.remove('open'));
+document.querySelectorAll('[data-page]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    const p = a.dataset.page;
+    showPage(p);
+    sidebar.classList.remove('open');
+  });
+});
+
+// theme
+$('themeBtn').addEventListener('click', ()=>{
+  document.body.classList.toggle('light-mode');
+  $('themeBtn').innerText = document.body.classList.contains('light-mode') ? '☀️' : '🌑';
+});
+
+// nav show page
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const node = $(id);
+  if(node) node.classList.add('active');
+  if(id === 'register') generateCaptcha();
+  if(id === 'products') renderProducts();
+  if(id === 'blinds') renderBlinds();
+  if(id === 'deposit') updateDepositUI();
+  if(id === 'admin'){ if(currentUser === ADMIN_USER) renderAdminAll(); else { alert('Bạn không có quyền'); showPage('home'); } }
+}
+
+// auth UI updates
+function updateAuthUI(){
+  $('sidebarUser').innerText = currentUser || 'Khách';
+  $('sessionDisplay').innerText = currentUser ? ('Đăng nhập: ' + currentUser) : 'Chưa đăng nhập';
+  if(currentUser){
+    $('menuLogin').style.display = 'none';
+    $('menuRegister').style.display = 'none';
+    $('menuStart').style.display = 'none';
+    $('menuLogout').style.display = 'block';
+    $('menuAdmin').style.display = (currentUser === ADMIN_USER) ? 'block' : 'none';
+  } else {
+    $('menuLogin').style.display = 'block';
+    $('menuRegister').style.display = 'block';
+    $('menuStart').style.display = 'block';
+    $('menuLogout').style.display = 'none';
+    $('menuAdmin').style.display = 'none';
+  }
+  refreshBalances();
+  renderTopupHistory();
+}
+
+// captcha
+let captchaVal='';
+function generateCaptcha(){
+  const a = Math.floor(Math.random()*9)+1, b = Math.floor(Math.random()*9)+1;
+  captchaVal = (a+b).toString();
+  $('captchaBox').innerText = `${a} + ${b} = ?`;
+}
+$('btnReloadCaptcha').addEventListener('click', generateCaptcha);
+
+// get local IPs via WebRTC (best-effort)
+async function getLocalIPs(timeout=1500){
+  return new Promise((resolve)=>{
+    const ips = new Set();
+    const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+    if(!RTCPeerConnection){ resolve(['unknown']); return; }
+    const pc = new RTCPeerConnection({iceServers:[]});
+    pc.createDataChannel('');
+    pc.onicecandidate = (evt) => {
+      if(!evt || !evt.candidate){ pc.close(); resolve(ips.size ? Array.from(ips) : ['unknown']); return; }
+      const s = evt.candidate.candidate;
+      const m = s.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+      if(m) ips.add(m[1]);
+    };
+    pc.createOffer().then(o=> pc.setLocalDescription(o)).catch(()=> { pc.close(); resolve(['unknown']); });
+    setTimeout(()=> { if(ips.size===0) resolve(['unknown']); }, timeout);
+  });
+}
+
+// register
+$('btnRegister').addEventListener('click', async ()=>{
+  const u = $('regUser').value.trim();
+  const p = $('regPass').value;
+  const c = $('captchaInput').value.trim();
+  if(!u || !p){ $('regMsg').innerText = 'Nhập đủ thông tin'; return; }
+  if(c !== captchaVal){ $('regMsg').innerText = 'Captcha sai'; generateCaptcha(); return; }
+  const users = read('users') || {};
+  if(users[u]){ $('regMsg').innerText = 'Tài khoản đã tồn tại — vui lòng đăng nhập'; return; }
+  const ips = await getLocalIPs();
+  const ip = ips && ips.length>0 ? ips[0] : 'unknown';
+  users[u] = { password: p, balance: 0, purchases: [], regTime: Date.now(), regIp: ip };
+  write('users', users);
+  $('regMsg').innerText = 'Đăng ký thành công. Mời đăng nhập.';
+  $('regUser').value=''; $('regPass').value=''; $('captchaInput').value='';
+  setTimeout(()=> showPage('login'), 900);
+});
+
+// login
+$('btnLogin').addEventListener('click', ()=>{
+  const u = $('loginUser').value.trim();
+  const p = $('loginPass').value;
+  const users = read('users') || {};
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    if(!users[u]) { users[u] = { password: p, balance: 0, purchases: [], regTime: Date.now(), regIp: 'local' }; write('users', users); }
+    setSession(u); $('loginMsg').innerText=''; showPage('products'); return;
+  }
+  if(users[u] && users[u].password === p){
+    setSession(u); $('loginMsg').innerText=''; showPage('products'); return;
+  }
+  $('loginMsg').innerText = 'Sai tên đăng nhập hoặc mật khẩu';
+});
+
+// logout
+$('menuLogout').addEventListener('click', ()=> {
+  if(confirm('Bạn có muốn đăng xuất?')) setSession(null);
+});
+
+// render products (no view button)
+function renderProducts(){
+  const ps = read('products') || [];
+  const container = $('productList'); container.innerHTML = '';
+  if(ps.length===0){ container.innerHTML = '<div class="muted">Chưa có sản phẩm</div>'; return; }
+  ps.forEach((p,i)=>{
+    const d = document.createElement('div'); d.className='item';
+    d.innerHTML = `<div class="title">${escapeHtml(p.name)}</div>
+      <div class="small muted">${money(p.price)}</div>
+      <div style="margin-top:8px"><button class="primary" onclick="buyProduct(${i})">Mua</button></div>`;
+    container.appendChild(d);
+  });
+}
+function buyProduct(idx){
+  if(!currentUser){ alert('Vui lòng đăng nhập để mua'); showPage('login'); return; }
+  const ps = read('products') || []; const p = ps[idx];
+  const users = read('users') || {}; const u = users[currentUser];
+  if(!u){ alert('Tài khoản không tồn tại'); return; }
+  if(Number(u.balance) < Number(p.price)){ alert('Không đủ tiền. Vui lòng nạp.'); return; }
+  u.balance = Number(u.balance) - Number(p.price);
+  u.purchases = u.purchases || []; u.purchases.push({ type:'product', name:p.name, link:p.link, time:Date.now() });
+  users[currentUser] = u; write('users', users);
+  refreshBalances();
+  alert('Mua thành công — mở link sản phẩm');
+  window.open(p.link,'_blank');
+  renderProducts();
+}
+
+// render blinds (no view button)
+function renderBlinds(){
+  const bs = read('blinds') || [];
+  const container = $('blindList'); container.innerHTML = '';
+  if(bs.length===0){ container.innerHTML = '<div class="muted">Chưa có túi mù</div>'; return; }
+  bs.forEach((b,i)=>{
+    const d = document.createElement('div'); d.className='item';
+    d.innerHTML = `<div class="title">${escapeHtml(b.name)}</div>
+      <div class="small muted">Giá: ${money(b.price)}</div>
+      <div style="margin-top:8px"><button class="primary" onclick="buyBlind(${i})">Mua</button></div>`;
+    container.appendChild(d);
+  });
+}
+function buyBlind(idx){
+  if(!currentUser){ alert('Đăng nhập để mua'); showPage('login'); return; }
+  const bs = read('blinds') || []; const b = bs[idx];
+  const users = read('users') || {}; const u = users[currentUser];
+  if(Number(u.balance) < Number(b.price)){ alert('Không đủ tiền'); return; }
+  u.balance = Number(u.balance) - Number(b.price);
+  u.purchases = u.purchases || [];
+  const reward = (b.acc||b.pass) ? { acc:b.acc, pass:b.pass } : { note:'Phần thưởng ngẫu nhiên' };
+  u.purchases.push({ type:'blind', name:b.name, reward, time:Date.now() });
+  users[currentUser] = u; write('users', users);
+  refreshBalances();
+  alert('Mua túi mù thành công — kiểm tra lịch sử mua');
+  renderBlinds();
+}
+
+// deposit / topup
+function updateDepositUI(){
+  const memo = currentUser ? `dh_${currentUser}` : 'dh_username';
+  $('depositMemo').innerText = memo;
+  $('depositQR').src = `https://img.vietqr.io/image/MBBank-381112-compact.png?amount=0&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent('DAO DUC HAI')}`;
+  renderTopupHistory();
+}
+$('btnCopyMemo').addEventListener('click', ()=> {
+  navigator.clipboard?.writeText($('depositMemo').innerText).then(()=> alert('Đã copy nội dung nạp'));
+});
+$('btnPaid').addEventListener('click', ()=>{
+  if(!currentUser){ alert('Đăng nhập để gửi yêu cầu nạp'); showPage('login'); return; }
+  const amt = Number($('depositAmount').value || 0);
+  if(!amt || amt <= 0){ $('depositStatus').innerText = 'Nhập số tiền hợp lệ'; return; }
+  const reqs = read('topupRequests') || [];
+  reqs.push({ id: uid(), user: currentUser, amount: amt, time: Date.now(), status: 'pending' });
+  write('topupRequests', reqs);
+  $('depositStatus').innerText = 'Đã gửi yêu cầu nạp. Chờ admin duyệt.';
+  $('depositAmount').value = '';
+  renderTopupHistory();
+  renderAdminTopups();
+});
+
+// user topup history
+function renderTopupHistory(){
+  if(!currentUser){ $('topupHistory').innerHTML = '<div class="muted">Đăng nhập để xem lịch sử</div>'; return; }
+  const reqs = (read('topupRequests')||[]).filter(r=> r.user === currentUser).slice().reverse();
+  if(reqs.length===0){ $('topupHistory').innerHTML = '<div class="muted">Chưa có yêu cầu</div>'; return; }
+  let html=''; reqs.forEach(r => html += `<div class="item">${new Date(r.time).toLocaleString()} — ${money(r.amount)} — ${r.status}</div>`);
+  $('topupHistory').innerHTML = html;
+}
+
+// admin area
+function renderAdminAll(){ renderProductsAdmin(); renderBlindsAdmin(); renderUsersAdmin(); renderAdminTopups(); }
+function renderProductsAdmin(){
+  const ps = read('products')||[]; let html='';
+  ps.forEach((p,i)=> html += `<div class="item">${escapeHtml(p.name)} — ${money(p.price)} — <a href="${encodeURI(p.link)}" target="_blank" style="color:var(--gold)">Link</a> <span style="float:right"><button class="ghost" onclick="adminEditProduct(${i})">Sửa</button> <button class="ghost" onclick="adminDeleteProduct(${i})">Xóa</button></span></div>`);
+  $('adminProducts').innerHTML = html || '<div class="muted">Chưa có sản phẩm</div>';
+}
+function adminAddProduct(){
+  const n = $('admin_p_name').value.trim(); const pr = Number($('admin_p_price').value||0); const link = $('admin_p_link').value.trim();
+  if(!n || !pr || !link){ alert('Nhập tên, giá và link'); return; }
+  const ps = read('products')||[]; ps.push({name:n, price:pr, link}); write('products', ps);
+  $('admin_p_name').value=''; $('admin_p_price').value=''; $('admin_p_link').value='';
+  renderProducts(); renderProductsAdmin();
+}
+function adminEditProduct(i){ const ps = read('products')||[]; const p = ps[i]; $('admin_p_name').value=p.name; $('admin_p_price').value=p.price; $('admin_p_link').value=p.link; ps.splice(i,1); write('products', ps); renderProductsAdmin(); renderProducts(); }
+function adminDeleteProduct(i){ if(!confirm('Xóa sản phẩm?')) return; const ps = read('products')||[]; ps.splice(i,1); write('products', ps); renderProductsAdmin(); renderProducts(); }
+$('adminAddProd').addEventListener('click', adminAddProduct);
+$('adminClearProd').addEventListener('click', ()=>{ $('admin_p_name').value=''; $('admin_p_price').value=''; $('admin_p_link').value=''; });
+
+function renderBlindsAdmin(){
+  const bs = read('blinds')||[]; let html='';
+  bs.forEach((b,i)=> html += `<div class="item">${escapeHtml(b.name)} — ${money(b.price)} — TK: ${escapeHtml(b.acc||'(n/a)')} / MK: ${escapeHtml(b.pass||'(n/a)')} <span style="float:right"><button class="ghost" onclick="adminEditBlind(${i})">Sửa</button> <button class="ghost" onclick="adminDeleteBlind(${i})">Xóa</button></span></div>`);
+  $('adminBlinds').innerHTML = html || '<div class="muted">Chưa có túi mù</div>';
+}
+function adminAddBlind(){ const n=$('admin_b_name').value.trim(); const pr=Number($('admin_b_price').value||0); const acc=$('admin_b_acc').value.trim(); const pass=$('admin_b_pass').value.trim(); if(!n||!pr){ alert('Nhập tên và giá'); return; } const bs = read('blinds')||[]; bs.push({name:n, price:pr, acc, pass}); write('blinds', bs); $('admin_b_name').value=''; $('admin_b_price').value=''; $('admin_b_acc').value=''; $('admin_b_pass').value=''; renderBlinds(); renderBlindsAdmin(); }
+function adminEditBlind(i){ const bs = read('blinds')||[]; const b = bs[i]; $('admin_b_name').value=b.name; $('admin_b_price').value=b.price; $('admin_b_acc').value=b.acc; $('admin_b_pass').value=b.pass; bs.splice(i,1); write('blinds', bs); renderBlindsAdmin(); }
+function adminDeleteBlind(i){ if(!confirm('Xóa túi mù?')) return; const bs = read('blinds')||[]; bs.splice(i,1); write('blinds', bs); renderBlindsAdmin(); renderBlinds(); }
+$('adminAddBlind').addEventListener('click', adminAddBlind);
+$('adminClearBlind').addEventListener('click', ()=>{ $('admin_b_name').value=''; $('admin_b_price').value=''; $('admin_b_acc').value=''; $('admin_b_pass').value=''; });
+
+function renderUsersAdmin(){
+  const users = read('users')||{}; let html='';
+  Object.keys(users).forEach(u => {
+    const info = users[u];
+    html += `<div class="item"><b>${escapeHtml(u)}</b> — ${money(info.balance||0)} <div class="muted small">ĐK: ${info.regTime ? new Date(info.regTime).toLocaleString() : '-'} — IP: ${info.regIp || '-'}</div><div style="margin-top:8px"><button class="ghost" onclick="adminCreditPrompt('${u}')">Cộng tiền</button> <button class="ghost" onclick="adminDeleteUser('${u}')">Xóa</button></div></div>`;
+  });
+  $('adminUsers').innerHTML = html || '<div class="muted">Không có user</div>';
+}
+function adminCreditPrompt(u){ const v = Number(prompt('Nhập số tiền cộng cho ' + u,'10000')||0); if(!v) return; adminAddCredit(u,v); }
+function adminAddCredit(u,amt){ const users = read('users')||{}; if(!users[u]) users[u] = { password:'', balance:0, purchases:[] }; users[u].balance = Number(users[u].balance||0) + Number(amt); write('users', users); renderUsersAdmin(); refreshBalances(); alert('Đã cộng ' + money(amt) + ' cho ' + u); }
+function adminDeleteUser(u){ if(!confirm('Xóa tài khoản '+u+' ?')) return; const users=read('users')||{}; delete users[u]; write('users', users); renderUsersAdmin(); alert('Đã xóa '+u); }
+
+function renderAdminTopups(){
+  const reqs = read('topupRequests')||[]; if(reqs.length===0){ $('adminTopups').innerHTML = '<div class="muted">Không có yêu cầu</div>'; return; }
+  let html=''; reqs.forEach(r => { html += `<div class="item"><b>${escapeHtml(r.user)}</b> — ${money(r.amount)} <div class="muted small">${new Date(r.time).toLocaleString()} — ${r.status}</div><div style="margin-top:8px">${r.status==='pending' ? `<button class="primary" onclick="adminApproveTopup('${r.id}')">Duyệt</button> <button class="ghost" onclick="adminRejectTopup('${r.id}')">Từ chối</button>` : ''}</div></div>`; }); $('adminTopups').innerHTML = html; }
+function adminApproveTopup(id){ const reqs = read('topupRequests')||[]; const r = reqs.find(x=>x.id===id); if(!r) return; if(r.status!=='pending'){ alert('Đã xử lý'); return; } const users = read('users')||{}; if(!users[r.user]) users[r.user] = { password:'', balance:0, purchases:[] }; users[r.user].balance = Number(users[r.user].balance||0) + Number(r.amount); write('users', users); r.status='approved'; write('topupRequests', reqs); renderAdminTopups(); renderUsersAdmin(); refreshBalances(); alert('Đã duyệt & cộng tiền cho ' + r.user); }
+function adminRejectTopup(id){ const reqs = read('topupRequests')||[]; const r = reqs.find(x=>x.id===id); if(!r) return; r.status='rejected'; write('topupRequests', reqs); renderAdminTopups(); alert('Đã từ chối'); }
+
+// refresh & helpers
+function refreshAll(){ renderProducts(); renderBlinds(); renderAdminAll(); renderUsersAdmin(); renderAdminTopups(); refreshBalances(); renderTopupHistory(); }
+function refreshBalances(){ const users = read('users')||{}; if(currentUser && users[currentUser]){ $('uiBalance').innerText = money(users[currentUser].balance); $('uiBalance2').innerText = money(users[currentUser].balance); } else { $('uiBalance').innerText = money(0); $('uiBalance2').innerText = money(0); } }
+function renderTopupHistory(){ if(!currentUser){ $('topupHistory').innerHTML = '<div class="muted">Đăng nhập để xem lịch sử</div>'; return; } const reqs = (read('topupRequests')||[]).filter(r=> r.user===currentUser).slice().reverse(); if(reqs.length===0){ $('topupHistory').innerHTML = '<div class="muted">Chưa có yêu cầu</div>'; return; } let html=''; reqs.forEach(r=> html += `<div class="item">${new Date(r.time).toLocaleString()} — ${money(r.amount)} — ${r.status}</div>`); $('topupHistory').innerHTML = html; }
+
+// expose functions for onclick in template
+window.buyProduct = buyProduct;
+window.buyBlind = buyBlind;
+window.adminEditProduct = adminEditProduct;
+window.adminDeleteProduct = adminDeleteProduct;
+window.adminEditBlind = adminEditBlind;
+window.adminDeleteBlind = adminDeleteBlind;
+window.adminApproveTopup = adminApproveTopup;
+window.adminRejectTopup = adminRejectTopup;
+window.adminAddCredit = adminAddCredit;
+window.adminDeleteUser = adminDeleteUser;
+
+// wiring
+$('adminAddProd').addEventListener('click', adminAddProduct);
+$('adminAddBlind').addEventListener('click', adminAddBlind);
+$('menuLogout').addEventListener('click', ()=> { if(confirm('Đăng xuất?')) setSession(null); });
+
+// init
+if(currentUser){ updateAuthUI(); showPage('products'); } else { updateAuthUI(); showPage('home'); }
+generateCaptcha();
+refreshAll();
+
+</script>
+</body>
+</html>
